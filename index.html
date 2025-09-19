@@ -9,20 +9,20 @@
 <div id="namaz-text">Yükleniyor...</div>
 
 <script>
-// Kullanıcının konumu için sabit şehir
+// Sabit şehir
 const city = "Istanbul";
 const country = "Turkey";
 
-// Namaz isimlerini Türkçe eşleştirme
+// Namaz isimleri Türkçe
 const namazTurkce = {
-    Fajr: "Sabah Namazı",
-    Dhuhr: "Öğle Namazı",
-    Asr: "İkindi Namazı",
-    Maghrib: "Akşam Namazı",
-    Isha: "Yatsı Namazı"
+    Fajr: "Sabah vakti",
+    Dhuhr: "Öğle vakti",
+    Asr: "İkindi vakti",
+    Maghrib: "Akşam vakti",
+    Isha: "Yatsı vakti"
 };
 
-// Şu anki zamana göre kalan süreyi saat+dakika formatında hesapla
+// Şu anki zamana göre kalan süreyi saat+dakika formatında
 function kalanSureSaatDakika(vakit) {
     const now = new Date();
     const [saat, dakika] = vakit.split(":");
@@ -35,7 +35,7 @@ function kalanSureSaatDakika(vakit) {
     const saatFark = Math.floor(fark / 3600);
     const dakikaFark = Math.floor((fark % 3600) / 60);
 
-    return { saat: saatFark, dakika: dakikaFark };
+    return { saat: saatFark, dakika: dakikaFark, toplamDakika: saatFark*60+dakikaFark };
 }
 
 // API'den namaz vakitlerini çek
@@ -44,13 +44,13 @@ fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&
   .then(data => {
     const timings = data.data.timings;
 
-    // Beş vakit namaz
     const besVakit = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
-
     let metin = "";
+
+    // Beş vakit için süre
     besVakit.forEach(vakit => {
         const kalan = kalanSureSaatDakika(timings[vakit]);
-        metin += `${namazTurkce[vakit]}: ${kalan.saat} saat ${kalan.dakika} dakika kaldı.<br>`;
+        metin += `${namazTurkce[vakit]}ne ${kalan.saat} saat ${kalan.dakika} dakika kaldı.\n`;
     });
 
     // En yakın vakti bul
@@ -58,20 +58,21 @@ fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&
     let enKisaFark = Infinity;
     besVakit.forEach(vakit => {
         const kalan = kalanSureSaatDakika(timings[vakit]);
-        const toplamDakika = kalan.saat * 60 + kalan.dakika;
-        if (toplamDakika > 0 && toplamDakika < enKisaFark) {
-            enKisaFark = toplamDakika;
+        if (kalan.toplamDakika > 0 && kalan.toplamDakika < enKisaFark) {
+            enKisaFark = kalan.toplamDakika;
             enYakinVakit = vakit;
         }
     });
 
     if (enYakinVakit) {
-        metin += `<br>Şu anki vaktin: ${namazTurkce[enYakinVakit]} (yaklaşık ${Math.floor(enKisaFark/60)} saat ${enKisaFark%60} dakika kaldı)<br>`;
+        const saat = Math.floor(enKisaFark / 60);
+        const dakika = enKisaFark % 60;
+        metin += `\nŞu anki vakit ${namazTurkce[enYakinVakit]} çıkmasına yaklaşık ${saat} saat ${dakika} dakika var.`;
     } else {
-        metin += `<br>Şu anki vaktin: Tüm namazlar geçti<br>`;
+        metin += `\nŞu anki vakit: Tüm namazlar geçti.`;
     }
 
-    document.getElementById("namaz-text").innerHTML = metin;
+    document.getElementById("namaz-text").innerText = metin;
   })
   .catch(err => {
     document.getElementById("namaz-text").innerText = "Namaz vakitleri alınamadı.";
