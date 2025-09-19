@@ -13,13 +13,13 @@
 const city = "Istanbul";
 const country = "Turkey";
 
-// Namaz isimleri Türkçe
+// Namaz isimleri Türkçe (namaz adı + "namazına")
 const namazTurkce = {
-    Fajr: "Sabah vakti",
-    Dhuhr: "Öğle vakti",
-    Asr: "İkindi vakti",
-    Maghrib: "Akşam vakti",
-    Isha: "Yatsı vakti"
+    Fajr: "Sabah namazına",
+    Dhuhr: "Öğle namazına",
+    Asr: "İkindi namazına",
+    Maghrib: "Akşam namazına",
+    Isha: "Yatsı namazına"
 };
 
 // Şu anki zamana göre kalan süreyi saat+dakika formatında
@@ -50,7 +50,7 @@ fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&
     // Beş vakit için süre
     besVakit.forEach(vakit => {
         const kalan = kalanSureSaatDakika(timings[vakit]);
-        metin += `${namazTurkce[vakit]}ne ${kalan.saat} saat ${kalan.dakika} dakika kaldı.\n`;
+        metin += `${namazTurkce[vakit]} ${kalan.saat} saat ${kalan.dakika} dakika kaldı.\n`;
     });
 
     // En yakın vakti bul
@@ -72,6 +72,7 @@ fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&
         metin += `\nŞu anki vakit: Tüm namazlar geçti.`;
     }
 
+    // Metin olarak koyuyoruz ki Siri düzgün okusun
     document.getElementById("namaz-text").innerText = metin;
   })
   .catch(err => {
