@@ -13,13 +13,21 @@
 const city = "Istanbul";
 const country = "Turkey";
 
-// Namaz isimleri Türkçe (namaz adı + "namazına")
-const namazTurkce = {
+// Namaz isimleri Türkçe
+const namazTurkceListe = {
     Fajr: "Sabah namazına",
     Dhuhr: "Öğle namazına",
     Asr: "İkindi namazına",
     Maghrib: "Akşam namazına",
     Isha: "Yatsı namazına"
+};
+
+const namazTurkceEnYakin = {
+    Fajr: "Sabah namazı",
+    Dhuhr: "Öğle namazı",
+    Asr: "İkindi namazı",
+    Maghrib: "Akşam namazı",
+    Isha: "Yatsı namazı"
 };
 
 // Şu anki zamana göre kalan süreyi saat+dakika formatında
@@ -50,7 +58,7 @@ fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&
     // Beş vakit için süre
     besVakit.forEach(vakit => {
         const kalan = kalanSureSaatDakika(timings[vakit]);
-        metin += `${namazTurkce[vakit]} ${kalan.saat} saat ${kalan.dakika} dakika kaldı.\n`;
+        metin += `${namazTurkceListe[vakit]} ${kalan.saat} saat ${kalan.dakika} dakika kaldı.\n`;
     });
 
     // En yakın vakti bul
@@ -67,7 +75,7 @@ fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&
     if (enYakinVakit) {
         const saat = Math.floor(enKisaFark / 60);
         const dakika = enKisaFark % 60;
-        metin += `\nŞu anki vakit ${namazTurkce[enYakinVakit]} çıkmasına yaklaşık ${saat} saat ${dakika} dakika var.`;
+        metin += `\nŞu anki vakit ${namazTurkceEnYakin[enYakinVakit]} çıkmasına yaklaşık ${saat} saat ${dakika} dakika var.`;
     } else {
         metin += `\nŞu anki vakit: Tüm namazlar geçti.`;
     }
